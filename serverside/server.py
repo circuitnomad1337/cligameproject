@@ -1,19 +1,13 @@
 import psycopg2
 import socket
 import threading
-from db.table_methods import User, Table
+from db.table_methods import user, table
+import serverside.db.global_vars.vars
 
-CONNECTION = psycopg2.connect(
-    dbname = "game_db",
-    user = "game_db_user",
-    password = "",
-    host = "0.0.0.0",
-    port = 5432
-)
-
-CURSOR = CONNECTION.cursor()
-HOST = "127.0.0.1"
-PORT = 65432
+CONNECTION = serverside.db.global_vars.vars.CONNECTION
+CURSOR = serverside.db.global_vars.vars.CURSOR
+HOST = serverside.db.global_vars.vars.HOST
+PORT = serverside.db.global_vars.vars.PORT
 
 def handle_client(conn, addr):
     print(f"[+] NEW CONNECTION [FROM {addr}].")
@@ -23,13 +17,37 @@ def handle_client(conn, addr):
 
     while True:
         try:
-            data = conn.recv(1024).decode().strip()
-            if not data:
-                break
+            data = conn.recv(1024)
+
+            if data == "login".encode():
+                conn.sendall(b"Provide us with username & password in the format: username password")
+                data = conn.recv(1024).decode().strip()
+                
+                parts = data.split()
+
+                if len(parts) > 2 or len(parts) < 2:
+                    conn.sendall(b"Provide exactly two arguments. Format: username password.")
+
+                response = user.login(parts[0], parts[1])
+
+                conn.sendall(f"{response['message']}".encode())
             
-            conn.sendall(f"You chose: {data}\n".encode())
+            elif data == "register".encode():
+                conn.sendall(b"Provide us with username & password in the format: username password")
+                data = conn.recv(1024).decode().strip()
+
+                parts = data.split()
+
+                if len(parts) > 2 or len(parts) < 2:
+                    conn.sendall(b"Provide exactly two arguments. Format: username password")
+
+                response = user.register(parts[0], parts[1])
+
+                conn.sendall(f"{response['message']}".encode())
 
         except Exception as e:
+            message = f"Error has occured! Detailed information: {e}."
+            conn.sendall(message.encode())
             break
 
     print(f"[-] CONNECTION TERMINATED [WITH {addr}].")

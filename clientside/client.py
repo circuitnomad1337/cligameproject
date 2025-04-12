@@ -9,9 +9,17 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     data = s.recv(1024).decode()
     print(data)
 
-    while True:
-        msg = input()
-        s.sendall(msg.encode())
+    msg = input()
+    msg = msg.encode()
+    s.sendall(msg)
 
-        data = s.recv(1024).decode()
-        print(data)
+    data = s.recv(1024).decode()
+    print(data)
+
+    msg = input()
+    s.sendall(msg.encode())
+
+    data = s.recv(1024).decode()
+    print(data)
+
+        
