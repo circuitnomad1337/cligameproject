@@ -7,40 +7,42 @@ import threading
 import socket
 
 
+def log_reg(conn, instr):
+    conn.sendall(srv_mes.LOGREG_DATA_DEMAND)
+    data = conn.recv(1024).decode().strip()
+    parts = data.split()
+
+    if len(parts) != 2:
+        conn.sendall(srv_mes.WRONG_LOGIN_DATA_FORMAT)
+        return
+
+
+    if instr == "login":
+        response = user.login(parts[0], parts[1])
+        retmes = response["message"].encode()
+        conn.sendall(retmes)
+
+    elif instr == "register":
+        response = user.register(parts[0], parts[1])
+        retmes = response["message"].encode()
+        conn.sendall(retmes)
+
+    else:
+        conn.sendall(srv_mes.UNKNOWN_INSTRUCTION)
+        return
+
 def handle_client(conn, addr):
     print(f"{srv_mes.NEW_CONNECTION}[{addr}]")
-
     conn.sendall(srv_mes.WELCOME_MESSAGE)
 
     while True:
         try:
-            data = conn.recv(1024)
-
-            if data == "login".encode():
-                conn.sendall(srv_mes.LOGREG_DATA_DEMAND)
-                data = conn.recv(1024).decode().strip()
-                
-                parts = data.split()
-
-                if len(parts) > 2 or len(parts) < 2:
-                    conn.sendall(srv_mes.WRONG_LOGIN_DATA_FORMAT)
-
-                response = user.login(parts[0], parts[1])
-                ret_sendall = response["message"].encode()
-                conn.sendall(ret_sendall)
+            data = conn.recv(1024).decode().strip()
             
-            elif data == "register".encode():
-                conn.sendall(srv_mes.LOGREG_DATA_DEMAND)
-                data = conn.recv(1024).decode().strip()
-
-                parts = data.split()
-
-                if len(parts) > 2 or len(parts) < 2:
-                    conn.sendall(srv_mes.WRONG_LOGIN_DATA_FORMAT)
-
-                response = user.login(parts[0], parts[1])
-                ret_sendall = response["message"].encode()
-                conn.sendall(ret_sendall)
+            if data == "login" or data == "register":
+                log_reg(conn, data)
+            else:
+                conn.sendall(srv_mes.UNKNOWN_INSTRUCTION)
 
         except Exception as e:
             conn.sendall(f"{e}".encode())
