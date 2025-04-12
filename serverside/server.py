@@ -1,13 +1,10 @@
-import psycopg2
-import socket
-import threading
-from db.table_methods import user, table
-import serverside.db.global_vars.vars
+from serverside.db.user_class import user
 
-CONNECTION = serverside.db.global_vars.vars.CONNECTION
-CURSOR = serverside.db.global_vars.vars.CURSOR
-HOST = serverside.db.global_vars.vars.HOST
-PORT = serverside.db.global_vars.vars.PORT
+import global_vars.ret_messages as ret_mes
+import global_vars.vars as vars
+import threading
+import socket
+
 
 def handle_client(conn, addr):
     print(f"[+] NEW CONNECTION [FROM {addr}].")
@@ -55,10 +52,10 @@ def handle_client(conn, addr):
 
 def start_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind((HOST, PORT))
+    server.bind((vars.HOST, vars.PORT))
     server.listen()
 
-    print(f"[SERVER] listening on [{HOST}:{PORT}].")
+    print(f"[SERVER] listening on [{vars.HOST}:{vars.PORT}].")
 
     while True:
         conn, addr = server.accept()

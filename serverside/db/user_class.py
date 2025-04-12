@@ -1,6 +1,6 @@
-import serverside.global_vars.db_queries as db_queries
-import serverside.global_vars.ret_messages as ret_mes
-import serverside.global_vars.vars as vars
+import global_vars.db_queries as db_queries
+import global_vars.ret_messages as ret_mes
+import global_vars.vars as vars
 import hashlib
 
 

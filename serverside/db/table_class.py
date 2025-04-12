@@ -1,5 +1,5 @@
-import serverside.global_vars.ret_messages as ret_mes
-import serverside.global_vars.vars as vars
+import global_vars.ret_messages as ret_mes
+import global_vars.vars as vars
 
 
 

@@ -1,3 +1,7 @@
+# INFORMATION
+
+This file only stands for saving the instructions used to create database tables.
+
 # USERS TABLE
 
     CREATE TABLE IF NOT EXISTS users (
